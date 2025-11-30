@@ -6,6 +6,7 @@ import { cn } from './lib/utils';
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [tag, setTag] = useState('');
+  const [outputFilename, setOutputFilename] = useState('');
   const [processedPdfBytes, setProcessedPdfBytes] = useState<Uint8Array | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [stats, setStats] = useState<{ total: number; updated: number } | null>(null);
@@ -20,6 +21,7 @@ function App() {
         return;
       }
       setFile(selectedFile);
+      setOutputFilename(`tagged_${selectedFile.name}`);
       setProcessedPdfBytes(null);
       setStats(null);
       setError(null);
@@ -36,6 +38,7 @@ function App() {
         return;
       }
       setFile(selectedFile);
+      setOutputFilename(`tagged_${selectedFile.name}`);
       setProcessedPdfBytes(null);
       setStats(null);
       setError(null);
@@ -66,7 +69,9 @@ function App() {
           for (const rawAnnot of annotsArray) {
              let annot = rawAnnot;
              if (annot instanceof PDFRef) {
-               annot = pdfDoc.context.lookup(annot);
+               const lookedUpAnnot = pdfDoc.context.lookup(annot);
+               if (!lookedUpAnnot) continue;
+               annot = lookedUpAnnot;
              }
 
              // In pdf-lib, we need to work with the raw objects sometimes if high-level isn't enough,
@@ -125,7 +130,7 @@ function App() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `tagged_${file.name}`;
+    link.download = outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -187,6 +192,21 @@ function App() {
                 </div>
               )}
             </div>
+
+            {file && (
+              <div className="mt-4 animate-in fade-in slide-in-from-top-2">
+                <label className="block text-sm font-bold mb-2 text-gray-600">
+                  Output Filename (optional)
+                </label>
+                <input
+                  type="text"
+                  value={outputFilename}
+                  onChange={(e) => setOutputFilename(e.target.value)}
+                  className="w-full px-4 py-2 text-lg font-bold border-4 border-neo-dark focus:outline-none focus:shadow-neo transition-shadow"
+                  placeholder="tagged_resume.pdf"
+                />
+              </div>
+            )}
           </div>
 
           {/* Step 2: Tag */}
@@ -203,6 +223,11 @@ function App() {
                   value={tag}
                   onChange={(e) => setTag(e.target.value)}
                   placeholder="example-company-2024"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && file && tag && !isProcessing) {
+                      processPdf();
+                    }
+                  }}
                   className="w-full pl-20 pr-4 py-4 text-xl font-bold border-4 border-neo-dark focus:outline-none focus:shadow-neo transition-shadow placeholder:text-gray-300"
                 />
               </div>
