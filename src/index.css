@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-neo-bg: #A29BFE;
+  --color-neo-primary: #FF6B6B;
+  --color-neo-secondary: #4ECDC4;
+  --color-neo-accent: #FFE66D;
+  --color-neo-dark: #2D2D2D;
+  
+  --shadow-neo: 4px 4px 0px 0px #2D2D2D;
+  --shadow-neo-hover: 2px 2px 0px 0px #2D2D2D;
+  --shadow-neo-active: 0px 0px 0px 0px #2D2D2D;
+  --shadow-neo-lg: 8px 8px 0px 0px #2D2D2D;
+  --shadow-neo-sm: 2px 2px 0px 0px #2D2D2D;
+  
+  --font-sans: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--color-neo-bg);
+  color: var(--color-neo-dark);
+  font-family: var(--font-sans);
+}
