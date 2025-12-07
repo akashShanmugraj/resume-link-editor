@@ -58,6 +58,7 @@ The upload service is the system's entry point.
      "resume_id": "uuid",
      "s3_key": "uploads/resume_123.pdf"
    }
+   ```
 
    🧩 2. PDF Extractor Worker
 
